@@ -1,0 +1,30 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+django-crispy-forms = "*"
+django-countries = "*"
+django-suit = "*"
+simplejson = "*"
+python-dateutil = "*"
+django-role-permissions = "*"
+django-autocomplete-light = "*"
+bootstrap-admin = "*"
+django-admin-view-permission = "*"
+"django-bootstrap4" = "*"
+django = "==1.11.7"
+schedule = "*"
+
+
+[requires]
+
+python_version = "3.6"

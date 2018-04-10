@@ -1,0 +1,62 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<div style="width: 50% !important; margin-right: auto !important; margin-left: auto !important;">
+  <h2 style="text-align: center;">{{ object.full_name }}</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Label</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>First Name</b></td>
+        <td>{{ object.first_name }}</td>
+      </tr>
+      <tr>
+        <td><b>Last Name</b></td>
+        <td>{{ object.last_name }}</td>
+      </tr>
+      <tr>
+        <td><b>Email</b></td>
+        <td>{{ object.email }}</td>
+      </tr>
+      <tr>
+        <td><b>Phone</b></td>
+        <td>{{ object.phone }}</td>
+      </tr>
+      <tr>
+        <td><b>Source</b></td>
+        <td>{{ object.source }}</td>
+      </tr>
+      <tr>
+        <td><b>Planned Trip</b></td>
+        <td>{{ object.planned_trip }}</td>
+      </tr>
+      <tr>
+        <td><b>Status</b></td>
+        <td>{{ object.get_status_display }}</td>
+      </tr>
+      <tr>
+        <td><b>Action Taken</b></td>
+        <td>{{ object.get_action_taken_display }}</td>
+      </tr>
+      <tr>
+        <td><b>Other Actions</b></td>
+        <td>{{ object.other_action }}</td>
+      </tr>
+      <tr>
+        <td><b>Is Monitored</b></td>
+        <td>{{ object.is_monitored }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+<a href="/enquiries/{{ object.slug }}/update" class="btn btn-success"> Edit </a>
+<a href="/enquiries" class="btn btn-primary"> Back To List </a>
+</div>
+{% endblock %}
+
+

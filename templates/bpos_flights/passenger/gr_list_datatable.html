@@ -1,0 +1,20 @@
+{% load staticfiles%}
+
+<script src="{% static 'datatables/DataTables-1.10.16/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables/DataTables-1.10.16/js/dataTables.bootstrap.min.js' %}"></script>
+	
+	<!-- For dataTables -->
+	<script>
+	
+	$(document).ready( function () {
+    		
+	    $('#passenger_list').DataTable({});
+	    
+	    var oTable = $('#passenger_list').dataTable();
+	    
+	    $('#client-list').on("change", function(e) {
+	    		oTable.fnDraw();
+	    });
+	} );
+	
+	</script>

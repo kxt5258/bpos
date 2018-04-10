@@ -1,0 +1,93 @@
+{% extends 'common/base.html' %}
+{% load staticfiles%}
+{% load bpos_group_check %}
+
+{% if request.user|has_group:"London" or request.user.is_superuser%}
+
+	{% block header %}
+	    <link href="{% static 'datatables/DataTables-1.10.16/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+	    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css" rel="stylesheet">
+	    <style>
+			#div_id_other_action {
+			    	display: none;
+			}
+		</style>
+	{% endblock %}
+
+	{% block content %}
+		<h2>List of Enquiries
+		<a id='create_enquiry_button' class="btn btn-success" style="float: right;"> Create Enquiry </a></h2>
+		<hr />
+		
+		<div class="table-responsive" style="clear: both;">  
+			<table border="0" cellspacing="5" cellpadding="5">
+				<tbody>
+					<tr>
+			            <td>Monitored?:&emsp;</td>
+			            <td><input type="checkbox" id="is_monitored" name="is_monitored"/></td>
+			        </tr>
+			    </tbody>
+			</table> <br />
+			<table class="table table-hover" id="enquiry_list">
+				<thead class="thead-light">
+					<tr>
+						<th>No</th>
+						<th>Full Name</th>
+						<th>Source</th>
+						<th>Contact Details</th>
+						<th>Planned Trip</th>
+						<th>Action Taken</th>
+						<th>Status</th>
+						<th>Created On</th>
+						<th>Confirmed On</th>
+						<th>Monitored</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for a in object_list %}
+					<tr>
+						<td> {{ a.id }} </td>
+						<td> {{ a.full_name }} </td>	
+						<td> {{ a.source }} </td>
+						<td> {{ a.contact }} </td>
+						<td> {{ a.planned_trip }} </td>
+						<td> {{ a.get_action_taken_display }} </td>
+						<td> {% if a.status == "confirmed" %} <a href="/status/{{ a.client_id }}">Confirmed</a> {% else %} {{ a.get_status_display }} {% endif %} </td>
+						<td> {{ a.created_on }} </td>
+						<td> {% if a.confirmed_on %} {{ a.confirmed_on }} {% endif %} </td>
+						<td> {{ a.is_monitored }} </td>
+						<td> <a class='edit_enquiry' id='{{ a.id }}'><i class="fas fa-edit text-info"></i></a> </td>
+					</tr>
+				{% empty %}
+					<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+
+	{% endblock %}
+
+	{% block footer %}	
+		{% include 'bpos_enquiries/en_list_datatable.html' %}
+		{% include 'bpos_enquiries/add_hide.html' %}
+	    {% include 'common/create_dialog.html' %}
+	    <script>
+		    $(function() {
+		        $('#create_enquiry_button').on('click', function() { 
+		            $('#dialog-modal').load('/enquiries/add/');
+		            init_dialog("Create a New Enquiry", "add/", "#custom_dialog_form", "Create Enquiry")
+		            
+		        });
+		        
+		        $('.edit_enquiry').on('click', function() { 
+		            url = "/enquiries/" + $(this).context.id + "/update/"
+		            $('#dialog-modal').load(url);
+		            init_dialog("Update Enquiry", url, "#custom_dialog_form", "Update Enquiry")
+		        });
+		        
+		    });
+		    var d = document.getElementById("enquiries")
+			d.className += "active"
+	    </script>
+	{% endblock %}
+{% endif %}

@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<form method="post" class="form" id="custom_dialog_form" >
+	  {% include 'common/error_field.html' %}
+	 {% crispy form form.helper%}
+	</form>
+	
+	<script>
+		$("#id_date").datepicker({ dateFormat: "yy-mm-dd" });
+		//Disable other options
+		$( "#id_hotel option:not(:selected)" ).prop('disabled',true);
+		
+		$( function() {
+			toggleHide();
+		})
+	</script>
+{% endblock %}
+

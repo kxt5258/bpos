@@ -1,0 +1,104 @@
+{% load staticfiles%}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="">
+
+    <title>Blue Poppy System</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/jquery-ui-1.9.2.custom.css' %}">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="{% static 'css/ie10-viewport-bug-workaround.css' %}" rel="stylesheet"> 
+    <script defer src="{% static 'js/fontawesome-all.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    {% block header %}
+  
+  {% endblock %}
+  <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/journal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bpos.css' %}">
+  </head>
+
+  <body>
+
+    <div class="container">    
+        <div id="header-id">
+        {% block menuarea %}
+  
+        {% endblock %}
+        </div>  
+        <div id="body-id">
+          {% block content %}
+  
+        {% endblock %}
+    </div>
+    <div style="height: 30px; clear: both;"></div>
+        
+        <div id="footer-id">
+          <!-- Bootstrap core JavaScript -->
+          <!-- Placed at the end of the document so the pages load faster -->
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+          <script src="{% static 'js/jquery-ui-1.9.2.custom.min.js' %}"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
+          <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+          <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+          
+          <script>
+            // using jQuery
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+  
+            var csrftoken = getCookie('csrftoken');
+  
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+          </script>
+    
+          {% block footer %}
+  
+        {% endblock %}
+      
+        </div>  
+        </div> <!-- /container -->
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{% extends 'common/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+	<style>
+		.row {
+			margin-bottom: 15px !important;
+		}
+		
+		.tab-more-info {
+			margin-bottom: 50px;
+		}
+		
+	</style>
+	    
+{% endblock %}
+
+{% block content %}
+	<form method="post" enctype="multipart/form-data" class="form" id="custom_dialog_form">
+	  {% include 'common/error_field.html' %}
+	  {% crispy form %}
+	</form>
+{% endblock %}
+
+{% block footer %}
+<script>
+	//Disable other options
+	$( "#id_client option:not(:selected)" ).prop('disabled',true);
+	var d = document.getElementById("status")
+	d.className += "active"
+</script>
+{% endblock %}

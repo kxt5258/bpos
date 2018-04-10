@@ -1,0 +1,334 @@
+{% extends 'common/base.html' %}
+{% load staticfiles%}
+{% block header %}
+	<style type="text/css">
+		#status_list_paginate, #status_list_filter {
+			float: right;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="tab-more-info">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#numbers">Statistics</a></li>
+        <li><a data-toggle="tab" href="#archives">Archive</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="numbers" class="tab-pane fade in active">
+        	<div class="form-group col-sm-3">
+    			<label for="year">Year: </label>
+    			<select id="year" class="form-control" onchange="draw(this.value)"></select>
+    		</div>
+        	<div class="row">
+        		<div class="col-md-12" style="margin: 1px; ">
+        			<hr />
+		        	<strong>Enquiries</strong>
+		        	<hr />
+		        </div>
+
+		        <div class="col-md-12" style="clear: both;">
+		        	<div class="col-md-8" id="en_data_id">
+		        		<!-- Table -->
+		        	</div>
+		        	<div class="col-md-4">
+		        		<canvas id="by_status"></canvas>
+		        	</div>
+		        </div>
+
+		        <div class="col-md-12" style="margin: 1px; clear: both;">
+		        	<hr />
+		        	<strong>Clients Per Agent Per Month</strong>
+		        	<hr />
+		        </div>
+
+		        <div class="col-md-12" style="clear: both;">
+		        	<div class="col-md-8" id="agent_data_id">
+		        		<!-- Table -->
+		        	</div>
+		        	<div class="col-md-4">
+		        		<canvas id="agent_per_month"></canvas>
+		        	</div>
+		        </div>
+
+		        <div class="col-md-12" style="margin: 1px; clear: both;">
+		        	<hr />
+		        	<strong>Client Type Per Agent</strong>
+		        	<hr />
+		        </div>
+
+		        <div class="col-md-12" style="clear: both;">
+		        	<div class="col-md-8" id="total_data_id">
+		        		<!-- Table -->
+		        	</div>
+		        	<div class="col-md-4">
+		        		<canvas id="by_agent"></canvas>
+		        	</div>
+		        </div>
+		    </div>
+        </div>
+        <div id="archives" class="tab-pane fade">
+            <h3>Archives</h3>
+            <table class="table table-hover" id="status_list">
+				<thead class="thead-light">
+					<tr>
+						<th>Name</th>
+						<th>Arriving On</th>
+						<th>Leaving On</th>
+						<th>Flights</th>
+						<th>Hotels</th>
+						<th>Visa</th>
+						<th>Guide and Contact</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for a in client_list %}
+					<tr>
+						<td> <a href = "/status/{{ a.id }}" >{{ a.name }} </a></td>
+						<td> {{ a.arriving_date }} </td>
+						<td> {{ a.leaving_date }} </td>
+						<td> {{ a.flight_status }} </td>
+						<td> {{ a.hotel_status }} </td>
+						<td> {{ a.get_status_display }} </td>
+						<td> {{ a.guide }} </td>
+					</tr>
+				{% empty %}
+					<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+				{% endfor %}
+				</tbody>
+			</table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'datatables/DataTables-1.10.16/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables/DataTables-1.10.16/js/dataTables.bootstrap.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script>
+
+	var start = 2017;
+	var end = new Date().getFullYear();
+	var options = "";
+	for(var year = start ; year <=end; year++){
+	  options += "<option>"+ year +"</option>";
+	}
+	document.getElementById("year").innerHTML = options;
+	document.getElementById("year").value = end;
+
+	$(document).ready( function () {
+	    $('#status_list').DataTable({
+	    		"order": [[1, 'desc']]
+	    });
+	})
+
+	var d = document.getElementById("mgmtdata")
+	d.className += "active"
+
+	draw(document.getElementById("year").value)
+
+	function draw(year='0000') {
+		var endpoint = "/api/enquiry_data/?year=" + year
+
+		$.ajax({
+			method: "GET",
+			url: endpoint,
+			success: function(data) {
+				drawChart_Enq("by_status", data.en_label, data.en_total, data.en_confirmed)
+				drawChart_Tot("by_agent", data.con_label, data.con_data)
+				var dataset = []
+				for (let key in data.agent_data) {
+					dataset.push({
+						label: data.agent_data[key][0],
+						data: data.agent_data[key],
+			            borderWidth: 2.5,
+			            borderColor: getRandomColor()
+	        		})
+				}
+
+				drawChart_Client("agent_per_month", data.agent_label, dataset)
+
+				drawEnqTable(data.en_label, data.en_total, data.en_confirmed)
+				drawAgentTable(data.agent_label, data.all_agent_data)
+				drawTotalTable(data.con_data)
+			},
+			error: function(data) {
+				console.log("ERROR")
+			}
+		})
+	}
+
+	function getRandomColor() {
+		var letters = '0123456789ABCDEF';
+		var color = '#';
+		for (let i = 0; i < 6; i++) {
+		  color += letters[Math.floor(Math.random() * 16)];
+		}
+		return color;
+	}	
+
+	function drawChart_Enq(idName, label, total, confirmed) {
+		var ctx = document.getElementById(idName).getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: label,
+				datasets: [{
+					label: 'Total Enquiries',
+					data: total,
+					backgroundColor: 'rgba(255, 99, 132, 0.2)',
+		            borderWidth: 2
+	        	},
+	        	{
+					label: 'Confirmed',
+					data: confirmed,
+					backgroundColor: 'green',
+		            borderWidth: 1
+	        	}
+	        	],
+			},
+			options: {
+		        scales: {
+		            xAxes: [{
+		                stacked: true
+		            }],
+		            yAxes: [{
+		                stacked: false
+		            }]
+		        }
+		    }
+		})
+	}
+
+	function drawChart_Tot(idName, label, total) {
+		var ctx = document.getElementById(idName).getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: label,
+				datasets: [{
+					label: 'No. of Clients',
+					data: total,
+					backgroundColor: '#31bce2',
+		            borderWidth: 1
+	        	},
+	        	],
+			},
+			options: {
+		    }
+		})
+	}
+
+	function drawChart_Client(idName, label, dataset) {
+		var ctx = document.getElementById(idName).getContext('2d');
+		var myChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: label,
+				datasets: dataset,
+			},
+			options: {
+		        scales: {
+		            xAxes: [{
+		                stacked: false
+		            }],
+		            yAxes: [{
+		                stacked: false
+		            }]
+		        }
+		    }
+		})
+	}
+
+	function drawTotalTable(data) {
+		var code = "<table class='table table-hover table-bordered '> <thead class='thead-light'> \
+						<tr>\
+							<th>Type</th>\
+							<th>Agent Group</th>\
+							<th>Agent FIT</th>\
+							<th>BP Group/FIT</th>\
+						</tr>\
+					</thead>\
+					<tbody><tr>"
+		if(data) {
+			code += "<td>Total</td><td>" + data[0] + "</td><td>" + data[1] + "</td><td>" + data[2] + "</td>"
+		}
+		else {
+			code += "<td>Total</td><td>0</td><td>0</td><td>0</td>"
+		}
+
+		code += "</tr></tbody> </table>"
+
+		document.getElementById('total_data_id').innerHTML = code
+	}
+
+	function drawEnqTable(label, data1, data2) {
+		var code = "<table class='table table-hover table-bordered'> <thead class='thead-light'> \
+						<tr>\
+							<th></th>"
+		
+		for (let i = 0; i < label.length; i++) {
+			code += "<th> " + label[i] + "</th>"
+		}
+
+		code += "<th>Total</th></tr>\
+					</thead>\
+					<tbody><tr>"
+		if(data1) {
+			code += "<td>Made</td>" 
+			var total = 0
+			for (let i = 0; i < data1.length; i++) {
+				code += "<td>" + data1[i] + "</td>" 
+				total+= data1[i]
+			}
+		}
+
+		code += "<td>" + total + "</td>" 
+		code += "</tr><tr>"
+
+		if(data2) {
+			var total = 0
+			code += "<td>Confirmed</td>" 
+			for (let i = 0; i < data2.length; i++) {
+				code += "<td>" + data2[i] + "</td>" 
+				total+= data1[i]
+			}
+		}
+
+		code += "<td>" + total + "</td>"
+
+		code += "</tr></tbody> </table>"
+
+		document.getElementById('en_data_id').innerHTML = code
+	}
+
+	function drawAgentTable(label, data) {
+		var code = "<table class='table table-hover table-bordered table-condensed'> <thead \ class='thead-light'> \
+						<tr>"
+		for (let i = 0; i < label.length; i++) {
+			code += "<th>" + label[i] + "</th>"
+		}
+
+		code += "</tr>\
+					</thead>\
+					<tbody>"
+
+		for (let i = Object.keys(data).length - 1; i >= 0; i--) {
+			code += "<tr>"
+			for (let j = 0; j < data[i].length; j++) {
+				code += "<td>" + data[i][j] + "</td>"
+			}
+			code += "</tr>"
+		}
+
+		code += "</tbody> </table>"
+
+		document.getElementById('agent_data_id').innerHTML = code
+	}
+
+</script>
+
+{% endblock %}

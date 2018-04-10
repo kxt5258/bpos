@@ -1,0 +1,67 @@
+{% load staticfiles%}
+
+<script src="{% static 'datatables/DataTables-1.10.16/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables/DataTables-1.10.16/js/dataTables.bootstrap.min.js' %}"></script>
+<!-- For dataTables -->
+<script>
+	$(document).ready( function () {
+	    $('#status_list').DataTable({
+	    		"order": [[1, 'desc']]
+	    });
+	    
+	    //Filtering for payment  
+	    $.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex) {
+	    		var checked = $('#payment_info').find(":selected").text();
+	    		if(!checked) {
+	    			return true
+	    		}
+	    		else if (checked && aData[3] == checked) {
+	    			return true
+	    		}
+	    		
+	    		return false
+	    });
+	    
+	    	$.fn.dataTableExt.afnFiltering.push(
+			function( oSettings, aData, iDataIndex ) {
+				var iFini = document.getElementById('from_date').value.replace(/\-/g, '');
+				var iFfin = document.getElementById('to_date').value.replace(/\-/g, '');
+				
+				var iStartDateCol = 1;
+				var iEndDateCol = 2;
+				
+				dateini = new Date(aData[iStartDateCol])
+				var datofini = dateini.getFullYear() + "" + ('0' + (dateini.getMonth() + 1)).slice(-2) + "" + ('0' + (dateini.getDate())).slice(-2)				
+				
+				if (iFini === "" && iFfin === "") {
+					return true
+				}
+				else if ( iFini <= datofini && iFfin === "")
+				{
+					return true;
+				}
+				else if ( iFfin >= datofini && iFini === "")
+				{
+					return true;
+				}
+				else if(iFini <= datofini && iFfin >= datofini) {
+					return true
+				}
+				return false;
+			}
+		);
+	    
+	    
+	    var oTable = $('#status_list').dataTable();
+	    $('#payment_info').on("change", function(e) {
+	    		oTable.fnDraw();
+	    });
+	    $('#from_date').on("change", function(e) { 
+	    		oTable.fnDraw(); 
+	    	});
+	    $('#to_date').on("change", function(e) { 
+	    		oTable.fnDraw(); 
+	    	});
+	} );
+
+</script>

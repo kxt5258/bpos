@@ -1,0 +1,9 @@
+*.pyc
+.DS_Store
+.project
+.pydevproject
+.ropeproject
+*/__pycache__
+*/migrations
+assets
+media

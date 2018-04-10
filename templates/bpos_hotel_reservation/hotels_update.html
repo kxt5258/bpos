@@ -1,0 +1,15 @@
+{% load crispy_forms_tags %}
+
+	<form method="post" class="form" id='custom_dialog_form'>
+		{% include 'common/error_field.html' %}
+	  	{% csrf_token %}
+	 	{% crispy form form.helper %}
+	</form>
+	
+	<script>
+		$("#id_la_date").datepicker({ dateFormat: "yy-mm-dd" });
+		$("#id_arriving_on").datepicker({ dateFormat: "yy-mm-dd" });
+		$("#id_leaving_on").datepicker({ dateFormat: "yy-mm-dd" });
+		
+	</script>
+	

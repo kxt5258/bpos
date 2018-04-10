@@ -1,0 +1,276 @@
+{% extends 'common/base.html' %}
+{% load bpos_group_check %}
+
+{% block header %}
+	<style>
+		.row {
+			margin-bottom: 15px !important;
+		}
+		
+		.tab-more-info {
+			margin-bottom: 50px;
+		}
+		
+	</style>
+	    
+{% endblock %}
+
+{% block content %}
+<div id="custom_main_content">
+	<div class="col-md-12 lead"><h2>Client Summary</h2><hr /></div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Name</div>
+		  <div class="col-md-3"><strong>{{ object.group_name }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Flights</div>
+		  <div class="col-md-3"><strong>{{ object.flight_status }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Agent / Type</div>
+		  <div class="col-md-3"><strong>{{ object.agent }} / {{ object.type }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Hotels</div>
+		  <div class="col-md-3"><strong>{{ object.hotel_status }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Pax</div>
+		  <div class="col-md-3"><strong>{{ object.pax }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Payment</div>
+		  <div class="col-md-3"><strong>{{ object.payment_status }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Arriving On</div>
+		  <div class="col-md-3"><strong>{{ object.arriving_date }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Visa</div>
+		  <div class="col-md-3"><strong>{{ object.get_status_display }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">leaving On</div>
+		  <div class="col-md-3"><strong>{{ object.leaving_date }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Guide</div>
+		  <div class="col-md-3"><strong>{{ object.guide }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Entering From / Leqving To</div>
+		  <div class="col-md-3"><strong>{{ object.entering_from }} / {{ object.leaving_to }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Language</div>
+		  <div class="col-md-3"><strong>{% if object.language and object.language != 'other' %} {{ object.language }} {% elif object.other_language %} {{ object.other_language }} {% else %} {% endif %}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Trek</div>
+		  <div class="col-md-3"><strong>{% if object.trek and object.trek != 'other' %} {{ object.trek }} {% elif object.other_trek %} {{ object.other_trek }} {% else %} {% endif %}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Guide Notified To Client</div>
+		  <div class="col-md-3"><strong>{% if object.guide_notified %} Yes {% else %} No {% endif %}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3">
+				<a href="/status" class="btn btn-info"> &lt;&lt; Back To List </a>
+				{% if request.user|has_group:"London" or request.user.is_superuser%}
+		  		<a class="btn btn-primary edit_client_button" id="{{ object.id }}"> Edit Client</a>
+		  		{% endif %}
+		  </div>
+	</div>
+</div>
+
+<div class="tab-more-info">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#group_member">Group Members</a></li>
+        <li><a data-toggle="tab" href="#itinerary">Itinerary</a></li>
+        <li><a data-toggle="tab" href="#trip_summary">Trip Summary</a></li>
+        <li><a data-toggle="tab" href="#trip_confirmation">Trip Confirmation</a></li>
+        <li><a data-toggle="tab" href="#visa_document">Visa Documents</a></li>
+        <li><a data-toggle="tab" href="#trip_for_guide">Trip Summary for Guide</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="group_member" class="tab-pane fade in active">
+        		<div class="row col-md-12">
+        			<h3>Members {% if request.user|has_group:"London" or request.user.is_superuser%}<a id="{{ object.id }}" class="btn btn-success create_member_button" style="float: right;">Add Member</a>{% endif %}</h3>
+        		</div>
+        		<div class="col-md-10">
+		        	<table class="table table-hover table-striped table-bordered" id="member_list">
+					<thead class="thead-dark">
+						<tr>
+							<th>ID</th>
+							<th>Title</th>
+							<th>Full Name</th>
+							<th>Is Student</th>
+							{% if request.user|has_group:"London" or request.user.is_superuser%}
+							<th class="col-md-1"></th>
+							<th class="col-md-1"></th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+					{% for m in member_list %}
+						<tr>
+							<td> {{ m.id }}</td>
+							<td> {{ m.get_title_display }} </a></td>
+							<td> {{ m.full_name }} </td>	
+							<td> {% if m.is_student %} <i class="fas fa-check"></i> {% else %} {% endif %} </td>
+							{% if request.user|has_group:"London" or request.user.is_superuser%}
+							<td> <a id="{{ m.id }}" class='edit_member_button'><i class="fas fa-edit text-info"></i></a> </td>
+							<td> <a id="{{ m.id }}" href="/status/member/{{m.id}}/delete/" class='delete_member_button'><i class="far fa-trash-alt"></i></a> </td>
+							{% endif %}
+						</tr>
+					{% empty %}
+						<tr><td></td><td></td><td></td><td></td>
+						{% if request.user|has_group:"London" or request.user.is_superuser%}
+						<td></td><td></td>
+						{% endif %}</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+            </div>
+        </div>
+        <div id="itinerary" class="tab-pane fade">
+            <h3>Itinerary</h3>
+        </div>
+        <div id="trip_summary" class="tab-pane fade">
+            <h3>Trip Summary</h3>
+        </div>
+        <div id="trip_confirmation" class="tab-pane fade">
+            <h3>Trip Confirmation</h3>
+        </div>
+        <div id="visa_document" class="tab-pane fade">
+        	   <div class="row col-md-12">
+        	   		{% if request.user|has_group:"London" or request.user|has_group:"Visas" or request.user.is_superuser%} 
+        			<h4>Edit Status </h4><hr />
+        			<div class='col-md-1'><h4>Status</h4></div>
+        			<div class='col-md-4'>
+        				{% if request.user.is_superuser %}
+        				<select class="select form-control" id='id_docstatus'>
+        					<option value='1'>Passport On System</option>
+        					<option value='2'>Visa Applied For</option>
+        					<option value='3'>Visa Authorised</option>
+        					<option value='4'>Visa Sent To Client</option>
+        				</select>
+        				{% elif request.user|has_group:"London" %}
+        				<select class="select form-control" id='id_docstatus'>
+        					<option value='1'>Passport On System</option>
+        					<option value='4'>Visa Sent To Client</option>
+        				</select>
+        				{% elif request.user|has_group:"Visas" %}
+        				<select class="select form-control" id='id_docstatus'>
+        					<option value='2'>Visa Applied For</option>
+        					<option value='3'>Visa Authorised</option>
+        				</select>
+        				{% else %}
+        				{% endif %}
+        			</div>	
+        			<div class='col-md-1'><a id="{{ object.id }}" class="btn btn-primary update_docstatus_button">Save</a></div>
+        			{% endif %}
+        		</div>
+        		
+            <div class="row col-md-12">
+        			<h3>Visa Document 
+        				{% if request.user|has_group:"London" or request.user|has_group:"Visas" or request.user.is_superuser%} 
+        				<a id="{{ object.id }}" class="btn btn-success create_document_button" style="float: right;" href="/status/documentadd/?client={{object.id}}">Add Document</a>
+        				{% endif %}</h3>
+        				<hr />
+        		</div>
+        		<div class="col-md-12">
+		        	<table class="table table-hover table-striped table-bordered" id="document_list">
+					<thead class="thead-dark">
+						<tr>
+							<th class="col-md-2">Document For</th>
+							<th class="col-md-2">Document Type</th>
+							<th class="col-md-1">Document Uploaded?</th>
+							<th class="col-md-5">Comments</th>
+							{% if request.user|has_group:"London" or request.user|has_group:"Visas" or request.user.is_superuser %}
+							<th class="col-md-1"></th>
+							<th class="col-md-1"></th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+					{% for m in document_list %}
+						<tr>
+							<td> {{ m.document_for }}</td>
+							<td> {{ m.get_document_type_display }} </a></td>
+							<td> {{ m.document }} </td>	
+							<td> {{ m.comment }} </td>
+							{% if request.user|has_group:"London" or request.user|has_group:"Visas" or request.user.is_superuser%}
+							<td> <a id="{{ m.id }}" class='edit_document_button' href="/status/document/{{m.id}}/update/"><i class="fas fa-edit text-info"></i></a> </td>
+							<td> <a id="{{ m.id }}" href="/status/document/{{m.id}}/delete/" class='delete_document_button'><i class="far fa-trash-alt"></i></a> </td>
+							{% endif %}
+						</tr>
+					{% empty %}
+						<tr><td></td><td></td><td></td><td></td>{% if request.user|has_group:"London" or request.user|has_group:"Visas" or request.user.is_superuser%}<td></td><td></td>{% endif %}</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+            </div>
+        </div>
+        <div id="trip_for_guide" class="tab-pane fade">
+            <h3>Trip Summary for Guide</h3>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}	
+	{% include 'bpos_status_report/add_hide.html' %}
+    {% include 'common/create_dialog.html' %}
+    <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+    <script>
+	    $(function() {
+	        $('.edit_client_button').on('click', function() { 
+	            url = "/status/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Client", url, "#custom_dialog_form", "Update Client")
+	        });
+	        
+	        $('.create_member_button').on('click', function() { 
+	            $('#dialog-modal').load('/status/memberadd/?client=' + $(this).context.id);
+	            init_dialog("Add Client Members", "memberadd/", "#custom_dialog_form", "Create Member")
+	        });
+
+	        $('.edit_member_button').on('click', function() { 
+	            url = "/status/member/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Member", url, "#custom_dialog_form", "Update Member")
+	        });
+	        
+	        $('.update_docstatus_button').on('click', function() { 
+	            $.ajax({ 
+                        url: "/status/udocstatus/",
+                        data: {
+                        		client: $(this).context.id, 
+                        		status: document.getElementById('id_docstatus').options[document.getElementById('id_docstatus').selectedIndex].value,
+                        		csrfmiddlewaretoken: '{{ csrf_token }}'
+                        	},
+                        type: 'post',
+                        // if successful print response
+                        success: function(response) {
+                        	console.log(location)
+                        	location['href'] = location['href'] + "#visa_document"
+                        	location.reload(true);
+                        }
+	            })
+	        });
+	        
+	    });
+	    
+	    $('body').on('onload', set_docstatus_value())
+	    		
+	    function set_docstatus_value() {
+	    		document.getElementById('id_docstatus').value={{ object.status }};
+	    }
+
+	    var d = document.getElementById("status")
+		d.className += "active"
+
+    </script>
+{% endblock %}
+
+

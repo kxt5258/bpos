@@ -1,0 +1,28 @@
+{% extends 'common/base.html' %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<form method="post" class="form" id="custom_dialog_form" enctype="multipart/form-data" action=".">
+	  {% include 'common/error_field.html' %}
+	  {% crispy form form.helper %}
+	</form>
+
+{% endblock %}
+
+{% block footer %}
+	{% include 'bpos_payments/add_hide.html' %}
+	<script>
+		$("#id_la_date").datepicker({ dateFormat: "yy-mm-dd" });
+		
+		//Run the field hide script when document is ready
+		$( function() {
+			toggleHide();
+		})
+
+		var d = document.getElementById("payments")
+		d.className += "active"
+	</script>
+{% endblock %}
+

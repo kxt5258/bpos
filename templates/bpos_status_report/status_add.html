@@ -1,0 +1,21 @@
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<form method="post" class="form" id="custom_dialog_form" >
+	  {% include 'common/error_field.html' %}
+	  {% crispy form %}
+	</form>
+{% endblock %}
+
+{% block footer %}
+<script>
+	$("#id_arriving_date").datepicker({ dateFormat: "yy-mm-dd" });
+	$("#id_leaving_date").datepicker({ dateFormat: "yy-mm-dd" });
+	
+	//Run the field hide script when document is ready
+	$( function() {
+		toggleHide();
+	})
+</script>	
+{% endblock %}
+

@@ -1,0 +1,103 @@
+{% extends 'common/base.html' %}
+{% load staticfiles %}
+{% load bpos_group_check %}
+
+{% block header %}
+    <link href="{% static 'datatables/DataTables-1.10.16/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<h2>Hotels
+		{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+			<a id='create_hotel_button' class="btn btn-success" style="float: right;"> Add New </a>
+		{% endif %}
+	</h2>
+	<hr />
+	
+	<div class="table-responsive" style="clear: both;">  
+		<table border="0" cellspacing="5" cellpadding="5">
+       		 <tbody>
+       		 	<tr>
+     		       <td>Clients &emsp;</td>
+   		           <td>
+	   		           <select id="client-list" name="client-list" class="select form-control input-sm"></select>
+   		           </td>
+               </tr>
+    			</tbody>
+    		</table>
+    		<br />
+		<table class="table table-hover" id="hotel_list">
+			<thead class="thead-light">
+				<tr>
+					<th>Client</th>
+					<th>Pax</th>
+					<th>Arriving On</th>
+					<th>Leaving On</th>
+					<th>Towns and Hotels</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for a in object_list %}
+				<tr>
+					<td> {{ a.client }} </td>
+					<td> {{ a.pax }} </td>
+					<td> {{ a.arriving_on }}</td>
+					<td> {{ a.leaving_on }}</td>
+					<td> <a href="/hotels/{{ a.id }}/"> Towns and Hotels </a></td>	
+				</tr>
+			{% empty %}
+				<tr><td></td><td></td><td></td><td></td><td></td></tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+{% endblock %}
+
+{% block footer %}	
+	{% include 'bpos_hotel_reservation/gr_list_datatable.html' %}
+    {% include 'common/create_dialog.html' %}
+	
+    <script>
+	    $(function() {
+	        $('#create_hotel_button').on('click', function() { 
+	            $('#dialog-modal').load('/hotels/add/');
+	            init_dialog("Create a New Hotel", "add/", "#custom_dialog_form", "Create Hotel")
+	            
+	        });
+	        
+	        $('.edit_flight').on('click', function() { 
+	            url = "/flights/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Flight Group", url, "#custom_dialog_form", "Update Flight Group")
+	        });
+	        
+	    });
+	    
+	    function getFilteredHotels() {
+	    		var town = document.getElementById("id_town").value;
+	    		var hotel_type = document.getElementById("id_hotel_type").value;
+	    		
+	    		$.ajax({ 
+	            url: "/hotels/get_filtered_hotels?town=" + town + "&hotel_type=" + hotel_type,
+	            type: 'get',
+	            success: function(response) {
+	            		data = JSON.parse(response);
+	                if(data) {
+	                		var $select = $('#id_hotel_name')
+	                		$select.empty()
+	                		$select.append($("<option></option>").attr("value", '').text("---------"));
+						$.each(data, function(key, value) {
+							$select.append($("<option></option>")
+									.attr("value", key).text(value));
+						})	                		
+	                }
+	            }
+	    		})
+    		}
+    		var d = document.getElementById("hotels")
+			d.className += "active"
+    </script>
+
+{% endblock %}

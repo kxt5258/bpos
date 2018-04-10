@@ -1,0 +1,44 @@
+
+<script>
+		function toggleHide() {
+			if(document.getElementById('id_deposit').options[document.getElementById('id_deposit').selectedIndex].value == "4" || document.getElementById('id_payment').options[document.getElementById('id_payment').selectedIndex].value == "4" || document.getElementById('id_balance').options[document.getElementById('id_balance').selectedIndex].value == "4") {
+				document.getElementById("div_id_amount_received").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_amount_received").style.display = "none";
+			}
+			
+			if($('#id_group_cancelled').is(":checked") || $('#id_member_cancelled').is(":checked")) {
+				document.getElementById("div_id_refund").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_refund").style.display = "none";
+			}
+			
+			if(document.getElementById('id_money_owed').options[document.getElementById('id_money_owed').selectedIndex].value == "1") {
+				document.getElementById("div_id_paid").style.display = "inline";
+				document.getElementById("div_id_collected").style.display = "none";
+				document.getElementById("div_id_amount").style.display = "inline";
+			}
+			else if(document.getElementById('id_money_owed').options[document.getElementById('id_money_owed').selectedIndex].value == "2") {
+				document.getElementById("div_id_paid").style.display = "none";
+				document.getElementById("div_id_collected").style.display = "inline";
+				document.getElementById("div_id_amount").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_amount").style.display = "none";
+				document.getElementById("div_id_paid").style.display = "none";
+				document.getElementById("div_id_collected").style.display = "none";
+			}
+		}
+
+		window.onload = function() {
+       		$('body').on('change', '#id_deposit', toggleHide)
+       		$('body').on('change', '#id_balance', toggleHide)
+       		$('body').on('change', '#id_payment', toggleHide)
+       		$('body').on('change', '#id_money_owed', toggleHide)
+       		$('body').on('change', '#id_group_cancelled', toggleHide)
+       		$('body').on('change', '#id_member_cancelled', toggleHide)
+    		}
+		
+</script>

@@ -1,0 +1,17 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+	<div class="row">
+        <div class="jumbotron">
+            <h1>Hello</h1>
+            <p>You are on your Dashboard</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+<script>
+	var d = document.getElementById("dashboard")
+	d.className += "active"
+</script>
+{% endblock %}

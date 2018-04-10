@@ -1,0 +1,240 @@
+{% extends 'common/base.html' %}
+{% load bpos_group_check %}
+
+{% block header %}
+	<style>
+		.row {
+			margin-bottom: 15px !important;
+		}
+		
+		.tab-more-info {
+			margin-bottom: 50px;
+		}
+		
+	</style>
+	    
+{% endblock %}
+
+{% block content %}
+<div id="custom_main_content">
+	<div class="row col-md-12">
+		  <div class="col-md-7"></div>
+		  <div class="col-md-5">
+				<a href="/payments" class="btn btn-info"> &lt;&lt; Back To List </a>
+				{% if request.user|has_group:"London" or request.user|has_group:"Accounts" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+		  		<a class="btn btn-primary edit_payment_button" id="{{ object.id }}" href="/payments/{{object.id}}/update/"> Edit Payment</a>
+		  		<a class="btn btn-danger delete_payment_button" id="{{ object.id }}" href="/payments/{{object.id}}/delete/"> Delete Payment</a>
+		  		{% endif %}
+		  </div>
+		  <hr />
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-5"><h3>Tour Price</h3></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-5"><h3>Payment</h3></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Tour</div>
+		  <div class="col-md-3"><strong>{{ object.tour }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Deposit</div>
+		  <div class="col-md-3"><strong>{{ object.get_deposit_display }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Flight</div>
+		  <div class="col-md-3"><strong>{{ object.flight }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Balance</div>
+		  <div class="col-md-3"><strong>{{ object.get_balance_display }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Is Flight Estimated</div>
+		  <div class="col-md-3"><strong>{% if object.flight_estimated %} Yes {% else %} No {% endif %}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Payment</div>
+		  <div class="col-md-3"><strong>{{ object.get_payment_display }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Visa Fees </div>
+		  <div class="col-md-3"><strong>{{ object.visa }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Date of last Action</div>
+		  <div class="col-md-3"><strong>{{ object.la_date }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Bank Charges </div>
+		  <div class="col-md-3"><strong>{{ object.bank }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Bank Form</div>
+		  <div class="col-md-3">{% if object.bank_form %}<a href="{{ object.bank_form.url }}"><strong>Download</strong></a>{% else %} {% endif %}</div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"><a class="btn btn-default inform_button" id="{{ object.id }}"> Inform Accounts Payment Sent</a></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Amount Received and Rate</div>
+		  <div class="col-md-3"><strong>{{ object.amount_received }}</strong></div>
+	</div>
+		<div class="row col-md-12">
+		  <div class="col-md-5"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-5"><h3>Money to Pay and Collect</h3></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Money Owed</div>
+		  <div class="col-md-3"><strong>{{ object.get_money_owed_display }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Amount</div>
+		  <div class="col-md-3"><strong>{{ object.amount }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">{% if object.money_owed == '1' %} Money Paid to Client {% elif object.money_owed == '2' %} Money Collected From Client{% else %} {% endif %}</div>
+		  <div class="col-md-3"><strong>{% if object.money_owed == '1' %} {% if object.paid %} Yes {% else %} No {% endif %} {% elif object.money_owed == '2' %} {% if object.collected %} Yes {% else %} No {% endif %} {% else %} {% endif %}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-5"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-5"><h3>Cancellation</h3></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Trip Cancelled?</div>
+		  <div class="col-md-3"><strong>{% if object.group_cancelled %} Yes {% else %} No {% endif %}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Group Member Cancelled?</div>
+		  <div class="col-md-3"><strong>{% if object.member_cancelled %} Yes {% else %} No {% endif %}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2"></div>
+		  <div class="col-md-3"></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Amount Refunded</div>
+		  <div class="col-md-3"><strong>{{ object.refund }}</strong></div>
+	</div>
+	<div class="row col-md-12" style="height: 15px;">
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-4"><h4>Extra Items</h4></div>
+		  <div class="col-md-2">
+		  	{% if request.user|has_group:"London" or request.user.is_superuser or request.user|has_group:"Accounts" or request.user|has_group:"General Manager" %}
+		  	<a id="{{ object.client_id }}" class="btn btn-success create_extra_button" style="float: right;">Add New</a>
+		  	{% endif %}
+		  </div>
+		  <div class="col-md-4"><h4>Payment Outs</h4></div>
+		  <div class="col-md-2">{% if request.user|has_group:"London" or request.user.is_superuser%}<a id="{{ object.client_id }}" class="btn btn-success create_outs_button" style="float: right;">Add New Payment Outs</a>{% endif %}</div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-6">
+		  	<table class="table table-hover table-striped table-bordered" id="extra_list">
+					<thead class="thead-dark">
+						<tr>
+							<th class="col-md-4">Item</th>
+							<th class="col-md-1">Amount</th>
+							<th class="col-md-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for m in extra_list %}
+						<tr>
+							<td> {{ m.item }}</td>
+							<td> {{ m.amount }} </a></td>
+							<td> <a id="{{ m.id }}" class='delete_extra_button' href="/payments/extra/{{m.id}}/delete/"><i class="far fa-trash-alt"></i></a> </td>
+						</tr>
+					{% empty %}
+						<tr><td></td><td></td><td></td></tr>
+					{% endfor %}
+					</tbody>
+				</table>
+		  </div>
+		  <div class="col-md-6">
+		  	<table class="table table-hover table-striped table-bordered" id="outs_list">
+					<thead class="thead-dark">
+						<tr>
+							<th class="col-md-3">Item</th>
+							<th class="col-md-1">Amount</th>
+							{% if request.user|has_group:"London" or request.user|has_group:"Accounts" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+							<th class="col-md-1">Paid</th>
+							{% endif %}
+							{% if request.user|has_group:"London" or request.user.is_superuser%}
+							<th class="col-md-1"></th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+					{% for m in outs_list %}
+						<tr>
+							<td> {{ m.item }}</td>
+							<td> {{ m.amount }}</td>
+							{% if request.user|has_group:"London" or request.user|has_group:"Accounts" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+							<td> {% if m.paid %} Yes {% else %} No {% endif %} </td>
+							{% endif %}
+							{% if request.user|has_group:"London" or request.user.is_superuser%}
+							<td> <a id="{{ m.id }}" class='delete_outs_button' href="/payments/outs/{{m.id}}/delete/"><i class="far fa-trash-alt"></i></a> </td>
+							{% endif %}
+						</tr>
+					{% empty %}
+						<tr><td></td><td></td>
+						{% if request.user|has_group:"London" or request.user|has_group:"Accounts" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+						<td></td>
+						{% endif %}
+						{% if request.user|has_group:"London" or request.user.is_superuser%}
+						<td></td>
+						{% endif %}
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+		  </div>
+	</div>			
+				
+</div>
+
+{% endblock %}
+
+{% block footer %}	
+	{% include 'bpos_status_report/add_hide.html' %}
+    {% include 'common/create_dialog.html' %}
+    {% include 'bpos_payments/add_hide.html' %}
+    <script>
+	    $(function() {
+	        /*$('.edit_payment_button').on('click', function() { 
+	            url = "/payments/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Payment", url, "#custom_dialog_form", "Update Payment")
+	        }); */
+	        
+	        $('.create_extra_button').on('click', function() { 
+	            $('#dialog-modal').load('/payments/extraadd/?client=' + $(this).context.id);
+	            init_dialog("Add Extra Item", "extraadd/", "#custom_dialog_form", "Create Extra Item")
+	        });
+	        
+	        $('.create_outs_button').on('click', function() { 
+	            $('#dialog-modal').load('/payments/outsadd/?client=' + $(this).context.id);
+	            init_dialog("Add Payment Out", "outsadd/", "#custom_dialog_form", "Create Payment Out")
+	        });
+	        
+	    });
+
+	    var d = document.getElementById("payments")
+		d.className += "active"
+
+    </script>
+{% endblock %}
+
+

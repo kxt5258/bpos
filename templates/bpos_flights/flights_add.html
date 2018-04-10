@@ -1,0 +1,9 @@
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<form method="post" class="form" id="custom_dialog_form" >
+	  {% include 'common/error_field.html' %}
+	 {% crispy form form.helper%}
+	</form>
+{% endblock %}
+

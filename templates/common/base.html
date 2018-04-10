@@ -1,0 +1,72 @@
+{% extends 'common/skel.html' %}
+{% load staticfiles%}
+{% load bpos_group_check %}
+    
+{% block header %}
+	
+{% endblock %}
+
+{% block menuarea %}
+
+<!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="row" style="padding-right: 1em; position: relative;">
+          <div class="col-sm-2">
+            
+          </div>
+          <div class="col-sm-7" style="text-align: center;">
+            <h3 style="color: #2b5763;">Blue Poppy Tours &amp; Treks Online System</h3>
+          </div>
+          <div class="col-sm-3" style="text-align: right; top: 50%;">
+            {% if user.is_authenticated %}
+                <a href="/logout"><span class='fas fa-sign-in-alt'></span> {{ user }}</a>
+            {% else %}
+                <a href="/login"><i class='fas fa-sign-out-alt'></i></a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="container-fluid" style="padding-right: 0px; padding-left: 0px;">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li id="dashboard"><a href="/"><i class="fas fa-newspaper"></i> Dashboard</a></li>
+              {% if request.user|has_group:"London" or request.user.is_superuser%}
+                  <li id="enquiries"><a href="/enquiries"><i class="fas fa-phone-volume"></i> Enquiries</a></li>
+              {% endif %}
+              <li id="status"><a href="/status"><i class="fas fa-users"></i> Status Report</a></li>
+              <li id="flights"><a href="/flights"><i class="fas fa-plane"></i> Flights</a></li>
+              <li id="hotels"><a href="/hotels"><i class="fas fa-bed"></i> Hotels</a></li>
+              <li id="payments"><a href="/payments"><i class="far fa-credit-card"></i> Payments</a></li>
+              <li id="guiderota"><a href="/guiderota"><i class="fas fa-street-view"></i> Guide Rota</a></li>
+              {% if user|has_group:"London" or user|has_group:"General Manager" or request.user.is_superuser %}
+              <li id="mgmtdata"><a href="/mgmtdata"><i class="fas fa-chart-area"></i> Mgmt. Data</a></li>
+              {% endif %}
+              {% if user.is_staff and user|has_group:"London" or user.is_superuser %}
+              <li><a href="/admin"><i class="fas fa-cogs"></i> Settings</a></li>
+              {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+		
+    
+{% block footer %}
+
+{% endblock %}
+			
+    		

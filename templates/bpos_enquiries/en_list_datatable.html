@@ -1,0 +1,42 @@
+{% load staticfiles%}
+
+<script src="{% static 'datatables/DataTables-1.10.16/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables/DataTables-1.10.16/js/dataTables.bootstrap.min.js' %}"></script>
+	<!-- For dataTables -->
+	<script>
+	
+	$(document).ready( function () {
+	    $('#enquiry_list').DataTable({
+	    		"order": [[7, 'desc']],
+	    		"columnDefs": [
+	    			{
+	    				"targets": [ 9 ],
+	    				"visible": false,
+	    			},
+	    			{
+	    				"targets": [ 10 ],
+	    				"searchable": false,
+	    			}
+	    		]
+	    });
+	    
+	    //Filtering for is_monitored
+	    $.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex) {
+	    		var checked = $('#is_monitored').is(':checked');
+	    		if(!checked) {
+	    			return true
+	    		}
+	    		else if (checked && aData[9] == "True") {
+	    			return true
+	    		}
+	    		
+	    		return false
+	    });
+	    
+	    var oTable = $('#enquiry_list').dataTable();
+	    $('#is_monitored').on("click", function(e) {
+	    		oTable.fnDraw();
+	    });
+	} );
+	
+	</script>

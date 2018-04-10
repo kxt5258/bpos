@@ -1,0 +1,96 @@
+{% load staticfiles%}
+
+<script src="{% static 'datatables/DataTables-1.10.16/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'datatables/DataTables-1.10.16/js/dataTables.bootstrap.min.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/r-2.2.1/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/r-2.2.1/datatables.min.js"></script>
+	
+	<!-- For dataTables -->
+	<script>
+	
+	$(document).ready( function () {
+		//Guide  Filter
+		$.ajax({ 
+            url: "/guiderota/get_filtered_guides?trekking_status=0",
+            type: 'get',
+            success: function(response) {
+            		data = JSON.parse(response);
+                if(data) {
+                		var $select = $('#is_monitored')
+                		$select.empty()
+                		$select.append($("<option></option>").attr("value", '').text("All Guides"));
+					$.each(data, function(key, value) {
+						$select.append($("<option></option>")
+								.attr("value", key).text(value));
+					})	                		
+                }
+            }
+    		})
+    		
+	    $('#guiderota_list').DataTable({
+	    		"columnDefs": [
+	    			{
+	    				"targets": [ 8 ],
+	    				"searchable": false,
+	    			}
+	    		]
+	    });
+	    
+	    //Filtering for is_monitored
+	    $.fn.dataTableExt.afnFiltering.push(function(oSettings, aData, iDataIndex) {
+	    		var value = $('#is_monitored').find(":selected").text();
+	    		if(value == "All Guides") {
+	    			return true
+	    		}
+	    		else if (aData[1] == value) {
+	    			return true
+	    		}
+	    		
+	    		return false
+	    });
+	    
+	    $.fn.dataTableExt.afnFiltering.push(
+				function( oSettings, aData, iDataIndex ) {
+					var iFini = document.getElementById('from_date').value.replace(/\-/g, '');
+					var iFfin = document.getElementById('to_date').value.replace(/\-/g, '');
+					
+					var iStartDateCol = 3;
+					var iEndDateCol = 4;
+					
+					dateini = new Date(aData[iStartDateCol])
+					var datofini = dateini.getFullYear() + "" + ('0' + (dateini.getMonth() + 1)).slice(-2) + "" + ('0' + (dateini.getDate())).slice(-2)				
+					
+					if (iFini === "" && iFfin === "") {
+						return true
+					}
+					else if ( iFini <= datofini && iFfin === "")
+					{
+						return true;
+					}
+					else if ( iFfin >= datofini && iFini === "")
+					{
+						return true;
+					}
+					else if(iFini <= datofini && iFfin >= datofini) {
+						return true
+					}
+					return false;
+				}
+			);
+	    
+	    var oTable = $('#guiderota_list').dataTable();
+	    
+	    $('#is_monitored').on("change", function(e) {
+	    		oTable.fnDraw();
+	    });
+	    
+	    $('#from_date').on("change", function(e) { 
+    			oTable.fnDraw(); 
+	    	});
+	    
+	    $('#to_date').on("change", function(e) { 
+	    		oTable.fnDraw(); 
+	    	});
+	} );
+	
+	</script>

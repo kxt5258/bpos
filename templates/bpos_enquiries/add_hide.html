@@ -1,0 +1,16 @@
+<script>
+	function toggleHide() {
+		if(document.getElementById('id_action_taken')) {
+			if(document.getElementById('id_action_taken').options[document.getElementById('id_action_taken').selectedIndex].value == "other") {
+				document.getElementById("div_id_other_action").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_other_action").style.display = "none";
+			}
+		}
+	}
+	
+	window.onload = function() {
+       		$('body').on('change', '#id_action_taken', toggleHide)
+    }
+</script>

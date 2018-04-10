@@ -1,0 +1,137 @@
+{% extends 'common/base.html' %}
+{% load staticfiles%}
+{% load bpos_group_check %}
+
+{% block header %}
+    <link href="{% static 'datatables/DataTables-1.10.16/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<h3> {{ client.client }} - list of pax
+		{% if request.user|has_group:"London" or request.user|has_group:"Ticketing" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+		<a id='{{ client.client_id }}' class="btn btn-success create_passenger_button" style="float: right; margin-left: 10px;"> Add New </a>
+		{% endif %}
+		<a href="/flights/" class="btn btn-info" style="float: right; ">  &lt;&lt; Back to Flight List </a>
+	</h3>
+	<hr />
+	
+	<div class="table-responsive" style="clear: both;">  
+		 <br />
+		<table class="table table-hover" id="passenger_list">
+			<thead class="thead-light">
+				<tr>
+					<th>Title</th>
+					<th>Name</th>
+					<th>From </th>
+					<th>To</th>
+					<th>Date</th>
+					<th>Class</th>
+					<th>Status</th>
+					<th>TTL</th>
+					<th>Student</th>
+					<th>Child</th>
+					{% if request.user|has_group:"London" or request.user|has_group:"Ticketing" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+					<th></th>
+					<th></th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+			{% for a in object_list %}
+				<tr>
+					<td> {{ a.get_title_display }} </td>
+					<td> {{ a.full_name }}</td>	
+					<td> {{ a.from_place }} </td>
+					<td> {{ a.to_place }}</td>
+					<td> {{ a.date }}</td>
+					<td> {{ a.get_flight_class_display }} </td>
+					<td> {{ a.get_status_display }} </td>
+					<td> {{ a.ttl }} </td>
+					<td> {% if a.is_student %} <i class="fas fa-check"></i> {% else %} {% endif %}</td>
+					<td> {% if a.is_child %} <i class="fas fa-check"></i> {% else %} {% endif %} </td>
+					{% if request.user|has_group:"London" or request.user|has_group:"Ticketing" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+					<td> <a class='edit_passenger' id='{{ a.id }}'><i class="fas fa-edit text-info"></i></a> </td>
+					<td> <a class='delete_passenger' id='{{ a.id }}' href="/flights/passenger/{{a.id}}/delete/"><i class="far fa-trash-alt"></i></a> </td>
+					{% endif %}
+				</tr>
+			{% empty %}
+				<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+				{% if request.user|has_group:"London" or request.user|has_group:"Ticketing" or request.user|has_group:"General Manager" or request.user.is_superuser%}
+				<td></td><td></td>
+				{% endif %}
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+
+{% endblock %}
+
+{% block footer %}	
+	{% include 'bpos_flights/passenger/gr_list_datatable.html' %}
+	{% include 'bpos_flights/passenger/add_hide.html' %}
+    {% include 'common/create_dialog.html' %}
+    
+    <!-- Date Picker -->
+	<script>
+	  $( function() {
+	    $("#from_date").datepicker({ dateFormat: "yy-mm-dd" });
+	    $("#to_date").datepicker({ dateFormat: "yy-mm-dd" });
+	  } );
+	</script>
+	
+    <script>
+	    $(function() {
+	        $('.create_passenger_button').on('click', function() { 
+	            $('#dialog-modal').load('/flights/passenger/add/?client=' + $(this).context.id);
+	            init_dialog("Create a New Passenger", "/flights/passenger/add/", "#custom_dialog_form", "Create Passenger")
+	            
+	        });
+	        
+	        $('.edit_passenger').on('click', function() { 
+	            url = "/flights/passenger/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Passenger", url, "#custom_dialog_form", "Update Passenger")
+	        });   
+	    });
+	    
+	    function getPassengerDetails() {
+	    		var client = document.getElementById("id_passenger").value;
+	    		$.ajax({ 
+                url: "/flights/get_passenger_info?pass_id=" + client,
+                type: 'get',
+                success: function(response) {
+                		data = JSON.parse(response);
+                    if(data) {
+                    		$('#id_title').val(data["title"])
+                    		$('#id_full_name').val(data["full_name"])
+                    }
+                }
+	    		})
+	    }
+	    
+	    function getFilteredPassenger() {
+	    		var client = document.getElementById("id_client").value;
+	    		$.ajax({ 
+	            url: "/flights/get_filtered_passengers?client_filter=" + client,
+	            type: 'get',
+	            success: function(response) {
+	            		data = JSON.parse(response);
+	                if(data) {
+	                		var $select = $('#id_passenger')
+	                		$select.empty()
+	                		$select.append($("<option></option>").attr("value", '').text("---------"));
+						$.each(data, function(key, value) {
+							$select.append($("<option></option>")
+									.attr("value", key).text(value));
+						})	                		
+	                }
+	            }
+	    		})
+	    }
+
+	    var d = document.getElementById("flights")
+		d.className += "active"
+    </script>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+
+<script>
+		function toggleHide() {
+			if(document.getElementById('id_room_category').options[document.getElementById('id_room_category').selectedIndex].value == "8") {
+				document.getElementById("div_id_other_category").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_other_category").style.display = "none";
+			}
+		}
+
+		window.onload = function() {
+       		$('body').on('change', '#id_room_category', toggleHide)
+    		}
+		
+</script>

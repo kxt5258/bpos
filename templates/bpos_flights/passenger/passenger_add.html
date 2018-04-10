@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<form method="post" class="form" id="custom_dialog_form" >
+	  {% include 'common/error_field.html' %}
+	 {% crispy form form.helper%}
+	</form>
+	<script>
+		$("#id_date").datepicker({ dateFormat: "yy-mm-dd" });
+		$("#id_dob").datepicker({ dateFormat: "yy-mm-dd", changeMonth: true, changeYear: true, yearRange: "-100:+0"});
+		$("#id_ttl").datepicker({ dateFormat: "yy-mm-dd" });
+		
+		//Run the field hide script when document is ready
+		$( function() {
+			toggleHide();
+			getFilteredPassenger();
+		})
+		
+		//Disable other options
+		$( "#id_client option:not(:selected)" ).prop('disabled',true);	
+	</script>
+{% endblock %}
+

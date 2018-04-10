@@ -1,0 +1,180 @@
+{% extends 'common/base.html' %}
+{% load bpos_group_check %}
+
+{% block header %}
+	<style>
+		.row {
+			margin-bottom: 15px !important;
+		}
+		
+		.tab-more-info {
+			margin-bottom: 50px;
+		}
+		
+	</style>
+	    
+{% endblock %}
+
+{% block content %}
+<div id="custom_main_content">
+	<div class="row col-md-12">
+		  <div class="col-md-9"><h3>Hotels</h3><hr /></div>
+		  <div class="col-md-3">
+				<a href="/hotels" class="btn btn-info"> &lt;&lt; Back To List </a>
+				{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+		  		<a class="btn btn-primary edit_hotel_button" id="{{ object.id }}"> Edit Hotel</a>
+		  		{% endif %}
+		  </div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-5"><h3></h3></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-5"><h3></h3></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Client</div>
+		  <div class="col-md-3"><strong>{{ object.client }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Arriving On</div>
+		  <div class="col-md-3"><strong>{{ object.arriving_on }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Town</div>
+		  <div class="col-md-3"><strong>{{ object.town }}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Leaving On</div>
+		  <div class="col-md-3"><strong>{{ object.leaving_on }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Hotel Name</div>
+		  <div class="col-md-3"><strong>{{ object.hotel_name}}</strong></div>
+		  <div class="col-md-2"></div>
+		  <div class="col-md-2">Notes</div>
+		  <div class="col-md-3"><strong>{{ object.notes }}</strong></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Hotel Type </div>
+		  <div class="col-md-3"><strong>{{ object.hotel_type }}</strong></div>
+		  <div class="col-md-2"></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Food Option</div>
+		  <div class="col-md-3"><strong>{{ object.get_food_option_display }}</strong></div>
+		  <div class="col-md-2"></div>
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-2">Is Backup</div>
+		  <div class="col-md-3">{% if object.is_backup %} Yes {% else %} No {% endif %}</div>
+		  <div class="col-md-2"></div>
+	</div>
+		
+	<div class="row col-md-12" style="height: 15px;">
+	</div>
+	<div class="row col-md-12">
+		  <div class="col-md-4"><h4>Rooms</h4></div>
+		  <div class="col-md-2"> </div>
+		  <div class="col-md-4"></div>
+		  <div class="col-md-2">
+		  	{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+		  	<a id="{{ object.id }}" class="btn btn-success create_room_button" style="float: right;">Add New Room</a>
+			{% endif %}
+		  </div>
+	</div>
+	<div class="row col-md-12">
+		  	<table class="table table-hover table-striped table-bordered" id="extra_list">
+					<thead class="thead-dark">
+						<tr>
+							<th class="col-md-2">Date</th>
+							<th class="col-md-2">Room Type</th>
+							<th class="col-md-3">Room Category</th>
+							<th class="col-md-1">Quantity </th>
+							<th class="col-md-3">Room Status</th>
+							<th class="col-md-1">backup? </th>
+							{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+							<th class="col-md-1"> </th>
+							<th class="col-md-1"> </th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+					{% for m in room_list %}
+						<tr>
+							<td> {{ m.date }}</td>
+							<td> {{ m.get_room_type_display }} </td>
+							<td> {% if m.other_category %} {{ m.other_category }} {% else %} {{ m.get_room_category_display }} {% endif %} </td>
+							<td> {{ m.quantity }} </td>
+							<td> {{ m.get_room_status_display }} </td>
+							<td> {% if m.is_backup %} Yes {% else %} No {% endif %} </td>
+							{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+							<td> <a id="{{ m.id }}" class='edit_room_button'><i class="fas fa-edit text-info"></i></a> </td>
+							<td> <a id="{{ m.id }}" class='delete_room_button' href="/hotels/roomupdate/{{m.id}}/delete/"><i class="far fa-trash-alt"></i></a> </td>
+							{% endif %}
+						</tr>
+					{% empty %}
+						<tr><td></td><td></td><td></td><td></td><td></td><td></td>
+						{% if request.user|has_group:"London" or request.user|has_group:"Reservations" or request.user|has_group:"General Manager" or request.user.is_superuser %} 
+						<td></td><td></td>
+						{% endif %}
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+		  </div>				
+</div>
+
+{% endblock %}
+
+{% block footer %}	
+	{% include 'bpos_status_report/add_hide.html' %}
+    {% include 'common/create_dialog.html' %}
+    {% include 'bpos_hotel_reservation/room_add_hide.html' %}
+    <script>
+	    $(function() {
+	        $('.edit_hotel_button').on('click', function() { 
+	            url = "/hotels/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Hotel", url, "#custom_dialog_form", "Update Hotel")
+	        });
+	        
+	        $('.create_room_button').on('click', function() { 
+	            $('#dialog-modal').load('/hotels/roomadd/?hotel=' + $(this).context.id);
+	            init_dialog("Add Room", "roomadd/", "#custom_dialog_form", "Create Room")
+	        });
+	        
+	        $('.edit_room_button').on('click', function() { 
+	            url = "/hotels/roomupdate/" + $(this).context.id + "/update/"
+	            $('#dialog-modal').load(url);
+	            init_dialog("Update Room", url, "#custom_dialog_form", "Update Room")
+	        });
+	        
+	    });
+	    
+	    function getFilteredHotels() {
+	    		var town = document.getElementById("id_town").value;
+	    		var hotel_type = document.getElementById("id_hotel_type").value;
+	    		
+	    		$.ajax({ 
+	            url: "/hotels/get_filtered_hotels?town=" + town + "&hotel_type=" + hotel_type,
+	            type: 'get',
+	            success: function(response) {
+	            		data = JSON.parse(response);
+	                if(data) {
+	                		var $select = $('#id_hotel_name')
+	                		$select.empty()
+	                		$select.append($("<option></option>").attr("value", '').text("---------"));
+						$.each(data, function(key, value) {
+							$select.append($("<option></option>")
+									.attr("value", key).text(value));
+						})	                		
+	                }
+	            }
+	    		})
+		}
+
+		var d = document.getElementById("hotels")
+		d.className += "active"
+
+    </script>
+{% endblock %}
+
+

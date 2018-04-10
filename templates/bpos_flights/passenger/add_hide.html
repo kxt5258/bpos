@@ -1,0 +1,17 @@
+
+<script>
+		function toggleHide() {
+			if(document.getElementById('id_fare').options[document.getElementById('id_fare').selectedIndex].value == "other") {
+				document.getElementById("div_id_other_fare").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_other_fare").style.display = "none";
+			}
+			
+		}
+
+		window.onload = function() {
+       		$('body').on('change', '#id_fare', toggleHide)
+    		}
+		
+	</script>

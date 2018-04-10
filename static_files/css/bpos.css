@@ -1,0 +1,70 @@
+/** Custom CSS for the App **/
+/*html,
+body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+
+.container {
+   min-height:100% !important;
+   position:relative;
+}
+
+#header-id {
+   padding:2px;
+}
+
+#body-id {
+   padding:2px;
+   padding-bottom:30px;   /* Height of the footer *//*
+   margin-bottom: 30px;
+}
+
+#footer-id {
+   clear: both;
+   position:absolute;
+   bsottom:0;
+   width:100%;
+   height:30px;   /* Height of the footer *//*
+   text-align: center
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	background-color: lightgrey;
+}
+
+.col-lg-10 {
+		padding-bottom: 15px;
+} */
+
+#bpos-login-panel {
+   margin: 50px auto 20px;
+   border-radius: 5px;
+   box-shadow: 0 0 40px rgba(0,0,0,.3);
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   -webkit-box-shadow: 0 0 40px rgba(0,0,0,.3);
+   -moz-box-shadow: 0 0 40px rgba(0,0,0,.3);
+}
+
+#bpos-login-btn {
+   width: 100%;
+}
+
+.navbar-default {
+   border-color: red !important;
+   border-top: 0px !important;
+   border-left: 0px !important;
+   border-right: 0px !important;
+   border-bottom: 2px solid transparent;
+}
+
+.ui-dialog .ui-dialog-title {
+   color: #fff !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+   background-color: #336699;
+   border-color: #336699;
+}

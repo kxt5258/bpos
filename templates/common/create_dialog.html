@@ -1,0 +1,92 @@
+
+<div id="dialog-modal">
+
+</div>
+
+<script>
+     var wWidth = $(window).width();
+	 var wHeight = $(window).height();
+	 var dWidth = wWidth * 0.8;
+	 var dHeight = wHeight * 0.8;
+    
+    function init_dialog(dialog_title, ajax_url, form_name, button_name) {
+    	// initiate dialog
+       $('#dialog-modal').dialog({	
+              position:["center",20],
+              minHeight: "auto",
+              width: dWidth,
+              modal: true,
+              title: dialog_title,
+              // I'm using the built-in buttons, but you can use your own
+              buttons: [{
+                    text: button_name,
+                    "class": "btn-success btn-lg",
+                    click: function() {                     	
+                        var dialog = $(this), 
+                        form = $(form_name),
+                        data = form.serialize();
+                    $('.off').remove(); // this is to avoid duplicates
+
+                    // run ajax post call
+                    $.ajax({ 
+                        url: ajax_url,
+                        data: data,
+                        type: 'post',
+                        mimeType: "multipart/form-data",
+
+                        // if successful print response
+                        success: function(response) {
+                            res = $.parseJSON(response);
+
+                            // if form was successful:
+                            if (res['status'] == 'OK') {
+                                // form was successful
+                                dialog.dialog('close'); // close dialog
+                                location.reload();
+                            }
+                            // if not... 
+                            else if (res['status'] == 'bad') {
+                                delete res['status'] // we don't need this anymore...
+                                var errors = res; // just for simplicity                           
+                                $.each(errors, function(key, value) {
+                                    // i.e. key='subject' and value is the error message itself
+                                    if(key == '__all__') {
+                                        		key = 'error'
+                                    }
+
+                                    var err = $('<span></span>', {
+                                                    'class': 'off',
+                                                    'text': "* " + value
+                                            }),
+                                        br = $('<br></br>', {
+                                            'class': 'off',
+                                        }),
+                                        input = $('#id_'+key).parent(); //find the parent div for the relevant input by key
+
+                                    // add a small break
+                                    br.appendTo(input);
+
+                                    // add the error
+                                    err.appendTo(input);
+
+                                    // add some styling
+                                    err.css('color', 'red').css('font-size', '14px');
+
+                                });
+                            }
+                        }
+
+                      });
+
+                    }
+              		},
+                    {
+                    text: "Cancel",
+                    "class": "btn-info btn-lg",
+                    click: function() {
+                    		$( this ).dialog( "close" );
+                    		}
+                    }]
+            });
+    }
+</script>

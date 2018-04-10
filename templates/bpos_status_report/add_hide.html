@@ -1,0 +1,32 @@
+
+<script>
+		function toggleHide() {
+			if(document.getElementById('id_trek').options[document.getElementById('id_trek').selectedIndex].value == "other") {
+				document.getElementById("div_id_other_trek").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_other_trek").style.display = "none";
+			}
+			
+			if($('#id_language_guide_needed').is(":checked")) {
+				document.getElementById("div_id_language").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_language").style.display = "none";
+			}
+			
+			if(document.getElementById('id_language').options[document.getElementById('id_language').selectedIndex].value == "other") {
+				document.getElementById("div_id_other_language").style.display = "inline";
+			}
+			else {
+				document.getElementById("div_id_other_language").style.display = "none";
+			}
+		}
+
+		window.onload = function() {
+       		$('body').on('change', '#id_trek', toggleHide)
+       		$('body').on('change', '#id_language_guide_needed', toggleHide)
+       		$('body').on('change', '#id_language', toggleHide)
+    	}
+		
+	</script>

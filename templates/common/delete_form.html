@@ -1,0 +1,48 @@
+{% extends 'common/base.html' %}
+
+{% block header %}
+	<style>
+		.row {
+			margin-bottom: 15px !important;
+		}
+		
+		.tab-more-info {
+			margin-bottom: 50px;
+		}
+		
+	</style>
+	    
+{% endblock %}
+
+{% block content %}
+
+<div id="model-bpos-delete" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        	<form action="" method="post">
+        		{% csrf_token %}
+        		<input type="hidden" name="parent_url" value="{{ request.META.HTTP_REFERER }}">
+	            <div class="modal-header">
+	                <h4 class="modal-title">Confirmation</h4>
+	            </div>
+	            <div class="modal-body">
+	                <p>Are you sure you want to delete <b>"{{ object }}"</b>?</p>
+	                <p class="text-danger"><medium>It will be deleted permenently once confirmed!</medium></p>
+	            </div>
+	            <div class="modal-footer">
+	                <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-info">Cancel</a>
+	                <input type="submit" value="Confirm" class="btn btn-danger"/>
+	            </div>
+        	</form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#model-bpos-delete").modal('show');
+		});
+	</script>
+{% endblock %}
