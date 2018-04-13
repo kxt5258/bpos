@@ -51,7 +51,7 @@
               <li id="mgmtdata"><a href="/mgmtdata"><i class="fas fa-chart-area"></i> Mgmt. Data</a></li>
               {% endif %}
               {% if user.is_staff and user|has_group:"London" or user.is_superuser %}
-              <li><a href="/admin"><i class="fas fa-cogs"></i> Settings</a></li>
+              <li><a href="/admin/auth/user/"><i class="fas fa-cogs"></i> Settings</a></li>
               {% endif %}
             </ul>
           </div><!--/.nav-collapse -->

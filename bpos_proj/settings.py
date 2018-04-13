@@ -33,8 +33,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'dal',
     'dal_select2',
-    'suit',
     'admin_view_permission',
+    'bpos_proj.apps.SuitConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'bpos_payments',
     'bpos_payment_out_items',
     'bpos_extra_items',
-    'bpos_hotel_reservation'
+    'bpos_hotel_reservation',
+    'bpos_alerts',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
 ]
 
 ROOT_URLCONF = 'bpos_proj.urls'
@@ -157,27 +159,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-
-SUIT_CONFIG = {
-    'ADMIN_NAME': 'BP Admin',
-    'HEADER_DATE_FORMAT': 'l, j. F Y',  # Saturday, 16th March 2013
-    'HEADER_TIME_FORMAT': 'H:i',       # 18:42
-    'SHOW_REQUIRED_ASTERISK': True,
-    'CONFIRM_UNSAVED_CHANGES': True,
-    'MENU_OPEN_FIRST_CHILD': True,
-    'MENU_ICONS': {
-        'sites': 'icon-leaf',
-        'auth': 'icon-lock',
-    },
-    'LIST_PER_PAGE': 20,
-    'MENU': (
-        {'app': 'auth', 'label': 'Authentication and Authorization', 'icon': 'icon-lock'},
-        {'app': 'bpos_agents', 'label': 'Agents', 'icon': 'icon-play'},
-        {'app': 'bpos_airports', 'label': 'Airports', 'icon': 'icon-plane'},
-        {'app': 'bpos_guides', 'label': 'Guides', 'icon': 'icon-road'},
-        {'app': 'bpos_towns', 'label': 'Towns', 'icon': 'icon-map-marker'},
-        {'app': 'bpos_hotels', 'label': 'Hotels', 'icon': 'icon-home'},
-    )
-}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

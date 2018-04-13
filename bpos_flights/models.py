@@ -2,6 +2,11 @@ from django.db import models
 from bpos_status_report.models import Client, Member
 from bpos_airports.models import Airport
 from bpos_status_report.models import TITLE
+from bpos_alerts.models import Alert
+
+from django_currentuser.middleware import get_current_authenticated_user
+
+from django.utils import timezone
 
 FARE_OPTIONS = (
     ("full", "Full Fare"),
@@ -47,9 +52,48 @@ class Flight(models.Model):
     def __str__(self):
         return str(self.full_name)
 
+    def __init__(self, *args, **kwargs):
+        super(Flight, self).__init__(*args, **kwargs)
+        self._ori_ttl = self.ttl
+        self._ori_status = self.status
+
+    def save(self, *args, **kwargs):
+        desc = ""
+        update = 0
+
+        if not self._ori_ttl and self.ttl:
+            desc = "TTL Added"
+            update = 1
+        elif self._ori_ttl and self._ori_ttl != self.ttl:
+            desc = "TTL Changed"
+            update = 1
+        else:
+            pass
+
+        if self._ori_status and self._ori_status != self.status and self.status not in (0, 4, 5):
+            desc = "Flight " + str(FLIGHT_STATUS[int(self.status)][1]) + " for " + str(self.date)
+            update = 1
+        elif self._ori_status and self._ori_status != self.status and self.status in (4, 5):
+            desc = str(FLIGHT_STATUS[int(self.status)][1]) + " for " + str(self.date)
+            update = 1
+        else:
+            pass
+
+        if update:
+            alert_data = {
+                "client": self.client,
+                "doctype": "Flight",
+                "changed_by": get_current_authenticated_user(),
+                "changed_at": timezone.now(),
+                "desc": desc,
+                "ttl": self.ttl
+            }
+            Alert(**alert_data).save()
+
+        super(Flight, self).save(*args, **kwargs)
+
 
 class FlightGroup(models.Model):
     client = models.ForeignKey(Client)
     pax = models.IntegerField()
     comments = models.TextField(null=True, blank=True)
- 

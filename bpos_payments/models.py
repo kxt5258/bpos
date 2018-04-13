@@ -2,6 +2,10 @@ from django.db import models
 from bpos_status_report.models import Client
 from bpos_extra_items.models import ExtraItems
 from bpos_payment_out_items.models import PaymentExtraItems
+from bpos_alerts.models import Alert
+
+from django_currentuser.middleware import get_current_authenticated_user
+from django.utils import timezone
 
 PAYMENT_STATUS = (
     ('1', 'Pay Information Sent'),
@@ -47,6 +51,37 @@ class Payment(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('payment-detail', args=[str(self.id)])
+
+    def __init__(self, *args, **kwargs):
+        super(Payment, self).__init__(*args, **kwargs)
+        """self._ori_ttl = self.ttl
+           self._ori_status = self.status"""
+
+    def save(self, *args, **kwargs):
+        desc = ""
+        update = 0
+
+        """if not self._ori_ttl and self.ttl:
+            desc = "TTL Added"
+            update = 1
+        elif self._ori_ttl and self._ori_ttl != self.ttl:
+            desc = "TTL Changed"
+            update = 1
+        else:
+            pass"""
+
+        if update:
+            alert_data = {
+                "client": self.client,
+                "doctype": "Flight",
+                "changed_by": get_current_authenticated_user(),
+                "changed_at": timezone.now(),
+                "desc": desc,
+                "ttl": self.ttl
+            }
+            Alert(**alert_data).save()
+
+        super(Payment, self).save(*args, **kwargs)
 
 
 class PayExtraItem(models.Model):

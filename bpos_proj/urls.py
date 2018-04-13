@@ -21,6 +21,9 @@ from django.contrib.auth import views as auth_view
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 
+admin.site.site_header = 'BPOS Settings'
+admin.site.index_title = "Settings"
+admin.site.site_title = "Administration"
 
 urlpatterns = [
     url(r'^$', views.home, name='home-page'),

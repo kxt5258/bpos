@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static suit_tags staticfiles %}
+
+{% block extrahead %}
+	<link rel="icon" href="{% static 'images/favicon.ico' %}">
+{% endblock %}
+
+{% block branding %}
+
+{% endblock %}
+
+{% block footer_links %}
+
+{% endblock %}
+
+{% block copyright %}
+Copyright &copy; 
+<span class="hidden-md-down">2017-</span>{% now "Y" %} Blue Poppy Tours &amp; Treks
+{% endblock %}
+
+{% block footer_branding %}
+Developed by Kinley Tshering (kxt5258@gmail.com)
+{% endblock %}
